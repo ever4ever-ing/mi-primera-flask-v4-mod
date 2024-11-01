@@ -1,18 +1,24 @@
-# Utiliza una imagen base de Python (ajusta la versión según tus necesidades)
+# Dockerfile for Flask application
 FROM python:3.12.7-slim
 
-# Establece el directorio de trabajo dentro del contenedor
+# Install system dependencies
+RUN apt-get update && \
+    apt-get install -y default-mysql-client && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set working directory
 WORKDIR /app
 
-# Copia el archivo requirements.txt y instala las dependencias
-COPY requirements.txt requirements.txt
-RUN pip install -r requirements.txt
+# Copy requirements and install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copia el resto de los archivos de tu aplicación
-COPY . /app
+# Copy application code
+COPY . .
 
-# Expone el puerto en el que se ejecutará tu aplicación Flask
+# Expose port
 EXPOSE 80
 
-# Comando para ejecutar la aplicación Flask
+# Command to run the application
 CMD ["python", "server.py"]
