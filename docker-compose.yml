@@ -1,10 +1,20 @@
 version: '3.8'
 
 services:
-  web:
-    build: .
+  nginx:
+    image: nginx:alpine
     ports:
       - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - web
+    restart: unless-stopped
+
+  web:
+    build: .
+    expose:
+      - "5000"
     environment:
       - MYSQL_HOST=db
       - MYSQL_USER=root
@@ -21,7 +31,7 @@ services:
       - MYSQL_ROOT_PASSWORD=password
       - MYSQL_DATABASE=pet
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./flask_app/bd/pet.sql:/docker-entrypoint-initdb.d/pet.sql

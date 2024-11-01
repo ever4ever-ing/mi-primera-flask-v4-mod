@@ -1,24 +1,28 @@
-# Dockerfile for Flask application
-FROM python:3.12.7-slim
+# Etapa de construcción de la aplicación Python
+FROM python:3.9-slim as builder
 
-# Install system dependencies
-RUN apt-get update && \
-    apt-get install -y default-mysql-client && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-# Set working directory
 WORKDIR /app
-
-# Copy requirements and install dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
 COPY . .
 
-# Expose port
+# Etapa final con Nginx
+FROM nginx:alpine
+
+# Copiar la configuración de Nginx
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
+
+# Copiar la aplicación Python desde la etapa anterior
+COPY --from=builder /app /app
+COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
+
+# Instalar Python en Alpine
+RUN apk add --no-cache python3 supervisor
+
+# Configurar Supervisor para manejar múltiples procesos
+COPY supervisord.conf /etc/supervisord.conf
+
 EXPOSE 80
 
-# Command to run the application
-CMD ["python", "server.py"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
