@@ -60,4 +60,3 @@ def eliminar_mascota(id):
 @app.route("/registrar_mascota")
 def registrar_mascota():
     return render_template("registrar_mascota.html")
-

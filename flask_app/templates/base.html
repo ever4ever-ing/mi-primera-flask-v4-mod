@@ -14,7 +14,7 @@
             <ul>
                 {% if session.get('usuario_id') %}
                     <li><a href="{{ url_for('index') }}">Inicio</a></li>
-                    <li><a href="{{ url_for('registrar_mascota') }}" >Registrar Mascota</a></li> <!-- Cambio -->
+                    <li><a href="{{ url_for('registrar_mascota') }}">Registrar Mascota</a></li>
                     <li><a href="{{ url_for('logout') }}">Cerrar Sesión</a></li>
                 {% else %}
                     <li> <a href="{{ url_for('login') }}"> <i class="fas fa-user"></i> Iniciar Sesión</a></li>
